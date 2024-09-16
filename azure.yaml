@@ -1,0 +1,12 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
+
+name: llama-index-azure-dynamic-session
+metadata:
+    template: azd-init@1.10.1
+services:
+    llama-index-azure-dynamic-session:
+        project: .
+        host: containerapp
+        language: ts
+        docker:
+            path: Dockerfile
