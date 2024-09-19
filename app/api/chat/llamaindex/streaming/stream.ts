@@ -9,7 +9,7 @@ import { ChatMessage, EngineResponse } from "llamaindex";
 import { generateNextQuestions } from "./suggestion";
 
 export function LlamaIndexStream(
-  response: AsyncIterable<EngineResponse>,
+  response: ReadableStream<EngineResponse>,
   data: StreamData,
   chatHistory: ChatMessage[],
   opts?: {
@@ -22,17 +22,17 @@ export function LlamaIndexStream(
 }
 
 function createParser(
-  res: AsyncIterable<EngineResponse>,
+  res: ReadableStream<EngineResponse>,
   data: StreamData,
   chatHistory: ChatMessage[],
 ) {
-  const it = res[Symbol.asyncIterator]();
+  const it = res.getReader();
   const trimStartOfStream = trimStartOfStreamHelper();
   let llmTextResponse = "";
 
   return new ReadableStream<string>({
     async pull(controller): Promise<void> {
-      const { value, done } = await it.next();
+      const { value, done } = await it.read();
       if (done) {
         controller.close();
         // LLM stream is done, generate the next questions with a new LLM call
