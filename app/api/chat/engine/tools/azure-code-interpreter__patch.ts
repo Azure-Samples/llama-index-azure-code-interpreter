@@ -117,7 +117,7 @@ export class AzureCodeInterpreterToolSpec
         executionType: "synchronous",
         timeout: 60,
         enableEgress: true,
-        code,
+        code: code || "console.log('no code provided')",
       },
     };
 
