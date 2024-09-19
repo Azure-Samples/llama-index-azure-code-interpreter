@@ -1,12 +1,15 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
 
-name: llama-index-azure-dynamic-session
+name: llama-index-azure-code-interpreter
 metadata:
     template: azd-init@1.10.1
 requiredVersions:
     azd: ">= 1.10.0"
+hooks:
+  postprovision: 
+    run: azd env get-values > .env
 services:
-    llama-index-azure-dynamic-session:
+    llama-index-azure-code-interpreter:
         project: .
         host: containerapp
         language: ts
