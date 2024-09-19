@@ -189,3 +189,4 @@ output AZURE_DEPLOYMENT_NAME string = azureOpenAiDeploymentName
 output EMBEDDING_MODEL string = azureOpenAiEmbeddingModel
 output EMBEDDING_DIM string = azureOpenAiEmbeddingDim
 output AZURE_CONTAINER_APP_SESSION_POOL_MANAGEMENT_ENDPOINT string = llamaIndexAzureDynamicSession.outputs.poolManagementEndpoint
+output SYSTEM_PROMPT string = 'You\'re a helpful assistant! Your task is respond to the user\'s questions. When the user asks questions about code, always use code interpreter tool to execute the generated code.'
