@@ -1,4 +1,4 @@
-import { BaseToolWithCall, OpenAIAgent, QueryEngineTool } from "llamaindex";
+import { BaseToolWithCall, QueryEngineTool, ReActAgent } from "llamaindex";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { getDataSource } from "./index";
@@ -26,7 +26,7 @@ export async function createChatEngine(documentIds?: string[], params?: any) {
   }
 
   const configFile = path.join("config", "tools.json");
-  let toolConfig: any;
+  let toolConfig: any  = {};
   try {
     // add tools from config file if it exists
     toolConfig = JSON.parse(await fs.readFile(configFile, "utf8"));
@@ -37,8 +37,9 @@ export async function createChatEngine(documentIds?: string[], params?: any) {
     tools.push(...(await createTools(toolConfig)));
   }
 
-  return new OpenAIAgent({
+  return new ReActAgent({
     tools,
     systemPrompt: process.env.SYSTEM_PROMPT,
+    verbose: true,
   });
 }
