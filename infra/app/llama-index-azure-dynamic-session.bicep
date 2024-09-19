@@ -10,6 +10,7 @@ param exists bool
 param azureOpenAiDeploymentName string
 param azureOpenAiEndpoint string
 param azureOpenAiApiVersion string
+param dynamicSessionsName string = 'llamaindex-sessions'
 
 @secure()
 param appDefinition object
@@ -42,6 +43,10 @@ resource applicationInsights 'Microsoft.Insights/components@2020-02-02' existing
   name: applicationInsightsName
 }
 
+resource dynamicSessionsRg 'Microsoft.App/sessionPools@2024-02-02-preview' existing = {
+  name: dynamicSessionsName
+}
+
 resource acrPullRole 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   scope: containerRegistry
   name: guid(subscription().id, resourceGroup().id, identity.id, 'acrPullRole')
@@ -58,6 +63,16 @@ module fetchLatestImage '../modules/fetch-container-image.bicep' = {
   params: {
     exists: exists
     name: name
+  }
+}
+
+module dynamicSessions '../modules/dynamic-sessions.bicep' = {
+  name: dynamicSessionsName
+  scope: resourceGroup()
+  params: {
+    name: 'llamaindex-sessions'
+    location: location
+    tags: tags
   }
 }
 
@@ -146,3 +161,4 @@ output name string = app.name
 output uri string = 'https://${app.properties.configuration.ingress.fqdn}'
 output id string = app.id
 output principalId string = identity.properties.principalId
+output poolManagementEndpoint string = dynamicSessions.outputs.poolManagementEndpoint

@@ -3,6 +3,8 @@
 name: llama-index-azure-dynamic-session
 metadata:
     template: azd-init@1.10.1
+requiredVersions:
+    azd: ">= 1.10.0"
 services:
     llama-index-azure-dynamic-session:
         project: .

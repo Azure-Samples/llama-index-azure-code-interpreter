@@ -152,12 +152,31 @@ module openAiRoleUser 'shared/security-role.bicep' = {
   scope: rg
 }
 
-
 module openAiRoleBackend 'shared/security-role.bicep' = {
   name: 'openai-role-backend'
   params: {
     principalId: llamaIndexAzureDynamicSession.outputs.principalId
     roleDefinitionId: '5e0bd9bd-7b93-4f28-af87-19fc36ad61bd'
+    principalType: 'ServicePrincipal'
+  }
+  scope: rg
+}
+
+module acaSessionExecutorRoleUser 'shared/security-role.bicep' = {
+  name: 'aca-session-role-user'
+  params: {
+    principalId: principalId
+    roleDefinitionId: '0fb8eba5-a2bb-4abe-b1c1-49dfad359bb0'
+    principalType: 'User'
+  }
+  scope: rg
+}
+
+module acaSessionExecutorRoleBackend 'shared/security-role.bicep' = {
+  name: 'aca-session-role-backend'
+  params: {
+    principalId: llamaIndexAzureDynamicSession.outputs.principalId
+    roleDefinitionId: '0fb8eba5-a2bb-4abe-b1c1-49dfad359bb0'
     principalType: 'ServicePrincipal'
   }
   scope: rg
@@ -169,3 +188,4 @@ output OPENAI_API_VERSION string = azureOpenAiApiVersion
 output AZURE_DEPLOYMENT_NAME string = azureOpenAiDeploymentName
 output EMBEDDING_MODEL string = azureOpenAiEmbeddingModel
 output EMBEDDING_DIM string = azureOpenAiEmbeddingDim
+output AZURE_CONTAINER_APP_SESSION_POOL_MANAGEMENT_ENDPOINT string = llamaIndexAzureDynamicSession.outputs.poolManagementEndpoint
