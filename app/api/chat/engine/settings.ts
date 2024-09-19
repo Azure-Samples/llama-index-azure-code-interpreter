@@ -28,8 +28,6 @@ function initAzureOpenAI() {
     deployment: process.env.AZURE_OPENAI_DEPLOYMENT ?? "gpt-4o-mini",
   };
 
-  console.log({azure})
-
   Settings.llm = new OpenAI({azure});
   Settings.embedModel = new OpenAIEmbedding({
     azure,
