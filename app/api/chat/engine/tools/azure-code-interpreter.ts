@@ -1,5 +1,5 @@
 import { ToolMetadata } from "llamaindex";
-import { AzureCodeInterpreterToolParams, AzureCodeInterpreterToolSpec as AzureCodeInterpreterTool} from "./azure-code-interpreter__patch";
+import { AzureDynamicSessionToolParams, AzureDynamicSessionTool} from "./AzureDynamicSessionTool.node--patched";
 
 const DEFAULT_META_DATA: ToolMetadata = {
   name: "azure_dynamic_sessions_nodejs_interpreter",
@@ -20,8 +20,8 @@ const DEFAULT_META_DATA: ToolMetadata = {
   },
 };
 
-export class AzureDynamicSessionToolSpec extends AzureCodeInterpreterTool {
-  constructor(config: AzureCodeInterpreterToolParams) {
+export class AzureDynamicSessionToolNodeJs extends AzureDynamicSessionTool {
+  constructor(config: AzureDynamicSessionToolParams = {} as any) {
     config.metadata = DEFAULT_META_DATA;
     super(config);
   }
