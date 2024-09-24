@@ -189,4 +189,4 @@ output AZURE_DEPLOYMENT_NAME string = azureOpenAiDeploymentName
 output EMBEDDING_MODEL string = azureOpenAiEmbeddingModel
 output EMBEDDING_DIM string = azureOpenAiEmbeddingDim
 output AZURE_CONTAINER_APP_SESSION_POOL_MANAGEMENT_ENDPOINT string = llamaIndexAzureDynamicSession.outputs.poolManagementEndpoint
-output SYSTEM_PROMPT string = 'You\'re a helpful assistant! Your task is respond to the user\'s questions. When the user asks questions about code, always use code interpreter tool to execute the generated code.'
+output SYSTEM_PROMPT string = 'You\'re a helpful assistant! Your task is respond to the user\'s questions. When the user asks questions about code, always use code interpreter tool to execute the generated code. If the user requests an image or a chart, or a graph, or a visual, always return it as an inlined base64 content. Always use PNG format. Limit the dimension of the image to 512x512 pixels. If the code execution fails, try 3 times and exit. If you need to save the image to disk, always save it in \'/mnt/data/output.png\'.'

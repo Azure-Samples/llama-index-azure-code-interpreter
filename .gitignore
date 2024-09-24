@@ -37,3 +37,4 @@ next-env.d.ts
 
 output/
 .azure
+public/tools/azure-dynamic-sessions/*
