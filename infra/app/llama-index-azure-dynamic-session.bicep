@@ -43,10 +43,6 @@ resource applicationInsights 'Microsoft.Insights/components@2020-02-02' existing
   name: applicationInsightsName
 }
 
-resource dynamicSessionsRg 'Microsoft.App/sessionPools@2024-02-02-preview' existing = {
-  name: dynamicSessionsName
-}
-
 resource acrPullRole 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   scope: containerRegistry
   name: guid(subscription().id, resourceGroup().id, identity.id, 'acrPullRole')
