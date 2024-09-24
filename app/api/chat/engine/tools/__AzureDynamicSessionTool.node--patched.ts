@@ -148,16 +148,16 @@ function getAzureADTokenProvider() {
 const DEFAULT_META_DATA: ToolMetadata = {
   name: "code_interpreter",
   description:
-    "A Node.js shell. Use this to execute Node.js and JavaScript commands " +
+    "A Node.js shell. Use this to execute Python commands " +
     "when you need to perform calculations or computations. " +
-    "Input should be a valid JavaScript command. " +
+    "Input should be a valid Python command. " +
     "Returns the result, stdout, and stderr. ",
   parameters: {
     type: "object",
     properties: {
       code: {
         type: "string",
-        description: "The JavaScript code to execute",
+        description: "The Python code to execute",
       },
     },
     required: ["code"],
@@ -366,11 +366,11 @@ export class AzureDynamicSessionTool
         identifier: this.sessionId,
         codeInputType: "inline",
         executionType: "synchronous",
-        code: code || "void 0",
+        code: code || "",
       },
     };
 
-    console.log("payload", { payload });
+    console.log("payload", { apiUrl, payload });
 
     try {
       const response = await fetch(apiUrl, {
@@ -387,7 +387,7 @@ export class AzureDynamicSessionTool
 
         console.log("result", { result });
 
-        if (result.type === "image") {
+        if (result && result.type === "image") {
           const { outputPath, filename } = await this.saveToDisk(
             (output.result as InterpreterToolOutputImage).base64_data,
             result.format,
@@ -398,6 +398,8 @@ export class AzureDynamicSessionTool
 
       return output;
     } catch (error) {
+      console.log({error})
+
       return {
         result: "",
         stdout: "",

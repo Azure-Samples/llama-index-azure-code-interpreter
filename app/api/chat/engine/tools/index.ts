@@ -1,5 +1,5 @@
 import { BaseToolWithCall } from "llamaindex";
-import { AzureDynamicSessionToolNodeJs } from "./azure-code-interpreter";
+import { AzureDynamicSessionTool } from "./__azure-code-interpreter";
 
 type ToolCreator = (config: unknown) => Promise<BaseToolWithCall[]>;
 
@@ -13,7 +13,7 @@ export async function createTools(toolConfig: {
 
 const toolFactory: Record<string, ToolCreator> = {
   interpreter: async (config: unknown) => {
-    return [new AzureDynamicSessionToolNodeJs(config as any)];
+    return [new AzureDynamicSessionTool(config as any)];
   }
 };
 
