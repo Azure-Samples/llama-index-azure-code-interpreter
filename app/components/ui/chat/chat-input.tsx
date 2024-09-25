@@ -6,7 +6,6 @@ import { Input } from "../input";
 import UploadImagePreview from "../upload-image-preview";
 import { ChatHandler } from "./chat.interface";
 import { useFile } from "./hooks/use-file";
-import { LlamaCloudSelector } from "./widgets/LlamaCloudSelector";
 
 const ALLOWED_EXTENSIONS = ["png", "jpg", "jpeg", "csv", "pdf", "txt", "docx"];
 
