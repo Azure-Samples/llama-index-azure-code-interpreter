@@ -32,6 +32,7 @@ export type InterpreterToolOutput = {
   result: InterpreterToolOutputImage | string;
   stdout: string;
   stderr: string;
+  status: "Failure" | "Success";
 };
 export type AzureDynamicSessionToolParams = InterpreterParameter & {
   metadata?: ToolMetadata<InterpreterParameter>;
@@ -148,10 +149,11 @@ function getAzureADTokenProvider() {
 const DEFAULT_META_DATA: ToolMetadata = {
   name: "code_interpreter",
   description:
-    "A Node.js shell. Use this to execute Python commands " +
+    "A Python shell. Use this to execute Python commands " +
     "when you need to perform calculations or computations. " +
     "Input should be a valid Python command. " +
-    "Returns the result, stdout, and stderr. ",
+    "Always returns the output as an inlined base64 data. " +
+    "Return the output as a result, stdout, and stderr.",
   parameters: {
     type: "object",
     properties: {
@@ -170,7 +172,9 @@ const DEFAULT_META_DATA: ToolMetadata = {
 export class AzureDynamicSessionTool
   implements BaseTool<AzureDynamicSessionToolParams>
 {
-  private readonly outputDir = path.normalize("tool-output");
+  private readonly outputDir = path.normalize(
+    "public/tools/azure-dynamic-sessions",
+  );
 
   /**
    * The metadata for the tool.
@@ -243,7 +247,6 @@ export class AzureDynamicSessionTool
 
     if (params.base64) {
       params.blob = new Blob([Buffer.from(params.base64, "base64")]);
-
     }
 
     if (!params.blob) {
@@ -379,33 +382,55 @@ export class AzureDynamicSessionTool
         body: JSON.stringify(payload),
       });
 
-      const output = (await response.json()) as InterpreterToolOutput;
-      console.log({ output });
-
-      if (typeof output.result !== "string") {
-        const result = output.result as InterpreterToolOutputImage;
-
-        console.log("result", { result });
-
-        if (result && result.type === "image") {
-          const { outputPath, filename } = await this.saveToDisk(
-            (output.result as InterpreterToolOutputImage).base64_data,
-            result.format,
-          );
-          output.result = `${outputPath}/${filename}`;
-        }
-      }
-
-      return output;
+      return this.parseResponse(response);
     } catch (error) {
-      console.log({error})
+      console.log({ error });
 
       return {
+        status: "Failure",
         result: "",
         stdout: "",
         stderr: "Error: Failed to execute the provided code. " + error,
       };
     }
+  }
+
+  private async parseResponse(response: Response) {
+    const output = (await response.json()) as {
+      properties: InterpreterToolOutput;
+    };
+    console.log({ output });
+
+    if (!output.properties) {
+      throw new Error(
+        `[AzureDynamicSessionTool.call] No properties found in response: ${JSON.stringify(
+          output,
+        )}`,
+      );
+    }
+
+    let { result } = output.properties;
+
+    // If the result is a base64 encoded image, convert it to an object
+    if (typeof result === "string" && result.startsWith("iVBOR")) {
+      result = {
+        base64_data: result,
+        format: "png",
+        type: "image",
+      };
+    }
+
+    if (typeof result !== "string") {
+      if (result && result.type === "image") {
+        const base64Data = result.base64_data;
+        const { outputPath } = await this.saveToDisk(
+          base64Data,
+          result.format,
+        );
+        output.properties.result = `![Download Image](${outputPath.replace("public/", "")})`;
+      }
+    }
+    return output.properties;
   }
 
   /**
@@ -419,7 +444,6 @@ export class AzureDynamicSessionTool
     ext: string,
   ): Promise<{
     outputPath: string;
-    filename: string;
   }> {
     try {
       const filename = `${randomUUID()}.${ext}`;
@@ -431,7 +455,6 @@ export class AzureDynamicSessionTool
       );
       return {
         outputPath,
-        filename,
       };
     } catch (error) {
       console.error(
@@ -439,7 +462,6 @@ export class AzureDynamicSessionTool
       );
       return {
         outputPath: "",
-        filename: "",
       };
     }
   }
