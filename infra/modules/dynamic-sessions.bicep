@@ -8,17 +8,17 @@ resource dynamicSessions 'Microsoft.App/sessionPools@2024-02-02-preview' = {
   tags: tags
   properties: {
     poolManagementType: 'Dynamic'
-      containerType: 'PythonLTS'
-      scaleConfiguration: {
-          maxConcurrentSessions: 100
-      }
-      dynamicPoolConfiguration: {
-        executionType: 'Timed'
-        cooldownPeriodInSeconds: 300
-      }
-      sessionNetworkConfiguration: {
-        status: 'EgressEnabled'
-      }
+    containerType: 'PythonLTS'
+    scaleConfiguration: {
+        maxConcurrentSessions: 100
+    }
+    dynamicPoolConfiguration: {
+      executionType: 'Timed'
+      cooldownPeriodInSeconds: 300
+    }
+    sessionNetworkConfiguration: {
+      status: 'EgressEnabled'
+    }
   }
 }
 
