@@ -2,7 +2,7 @@
 
 [![Open project in GitHub Codespaces](https://img.shields.io/badge/Codespaces-Open-black?style=flat-square&logo=github)](https://codespaces.new/Azure-Samples/llama-index-azure-code-interpreter?hide_repo_select=true&ref=main&quickstart=true)
 [![Open project in Dev Containers](https://img.shields.io/badge/Dev_Containers-Open-blue?style=flat-square)](https://codespaces.new/Azure-Samples/llama-index-azure-code-interpreter?hide_repo_select=true&ref=main&quickstart=true)
-[![Build Status](https://img.shields.io/github/actions/workflow/status/Azure-Samples/llama-index-azure-code-interpreter/build-test.yaml?style=flat-square&label=Build)](https://github.com/Azure-Samples/llama-index-azure-code-interpreter/actions)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/Azure-Samples/llama-index-azure-code-interpreter/build.yaml?style=flat-square&label=Build)](https://github.com/Azure-Samples/llama-index-azure-code-interpreter/actions)
 ![Node version](https://img.shields.io/badge/Node.js->=20-3c873a?style=flat-square)
 [![License](https://img.shields.io/badge/License-MIT-pink?style=flat-square)](LICENSE)
 
