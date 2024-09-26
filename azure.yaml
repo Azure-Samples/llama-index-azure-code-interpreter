@@ -7,7 +7,13 @@ requiredVersions:
     azd: ">= 1.10.0"
 hooks:
   postprovision: 
-    run: azd env get-values > .env
+    posix:
+        shell: sh
+        run: azd env get-values > .env
+    windows:
+        shell: pwsh 
+        run: azd env get-values > .env
+
 services:
     llama-index-azure-code-interpreter:
         project: .
