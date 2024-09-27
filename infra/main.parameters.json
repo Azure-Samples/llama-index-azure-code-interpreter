@@ -50,6 +50,9 @@
       },
       "azureOpenAiEmbeddingDim": {
         "value": "${EMBEDDING_DIM=1024}"
+      },
+      "CI": {
+        "value": "${GITHUB_ACTIONS}"
       }
     }
 }

@@ -43,3 +43,6 @@ jobs:
         run: npm install
       - name: Build 
         run: npm run build
+        env:
+            # Provide this env variable so that the build does not fail
+            AZURE_OPENAI_ENDPOINT: "foo-bar"

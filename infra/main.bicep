@@ -16,6 +16,9 @@ param llamaIndexAzureDynamicSessionDefinition object
 @description('Id of the user or app to assign application roles')
 param principalId string
 
+@description('Whether the deployment is running on GitHub Actions')
+param CI string = ''
+
 param disableKeyBasedAuth bool = true
 param azureOpenAiDeploymentName string // See main.parameters.json
 param azureOpenAiApiVersion string // See main.parameters.json 
@@ -151,12 +154,14 @@ module azureOpenAi 'shared/cognitive-services.bicep' = {
   scope: rg
 }
 
+var principalType = empty(CI) ? 'User' : 'ServicePrincipal'
+
 module openAiRoleUser 'shared/security-role.bicep' = {
   name: 'openai-role-user'
   params: {
     principalId: principalId
     roleDefinitionId: '5e0bd9bd-7b93-4f28-af87-19fc36ad61bd'
-    principalType: 'User'
+    principalType: principalType
   }
   scope: rg
 }
@@ -176,7 +181,7 @@ module acaSessionExecutorRoleUser 'shared/security-role.bicep' = {
   params: {
     principalId: principalId
     roleDefinitionId: '0fb8eba5-a2bb-4abe-b1c1-49dfad359bb0'
-    principalType: 'User'
+    principalType: principalType
   }
   scope: rg
 }
