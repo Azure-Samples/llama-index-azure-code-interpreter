@@ -12,6 +12,9 @@ param azureOpenAiEndpoint string
 param azureOpenAiApiVersion string
 param dynamicSessionsName string = 'llamaindex-sessions'
 
+@description('The name of the container image')
+param imageName string = ''
+
 @secure()
 param appDefinition object
 
@@ -54,14 +57,6 @@ resource acrPullRole 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   }
 }
 
-module fetchLatestImage '../modules/fetch-container-image.bicep' = {
-  name: '${name}-fetch-image'
-  params: {
-    exists: exists
-    name: name
-  }
-}
-
 module dynamicSessions '../modules/dynamic-sessions.bicep' = {
   name: dynamicSessionsName
   scope: resourceGroup()
@@ -75,7 +70,7 @@ module dynamicSessions '../modules/dynamic-sessions.bicep' = {
 resource app 'Microsoft.App/containerApps@2023-05-02-preview' = {
   name: name
   location: location
-  tags: union(tags, {'azd-service-name':  'llama-index-azure-dynamic-session' })
+  tags: union(tags, {'azd-service-name':  'llama-index-azure-code-interpreter' })
   dependsOn: [ acrPullRole ]
   identity: {
     type: 'UserAssigned'
@@ -105,7 +100,7 @@ resource app 'Microsoft.App/containerApps@2023-05-02-preview' = {
     template: {
       containers: [
         {
-          image: fetchLatestImage.outputs.?containers[?0].?image ?? 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest'
+          image: !empty(imageName) ? imageName : 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest'
           name: 'main'
           env: union([
             {
@@ -158,3 +153,5 @@ output uri string = 'https://${app.properties.configuration.ingress.fqdn}'
 output id string = app.id
 output principalId string = identity.properties.principalId
 output poolManagementEndpoint string = dynamicSessions.outputs.poolManagementEndpoint
+output registryLoginServer string = containerRegistry.properties.loginServer
+output registryName string = containerRegistry.name

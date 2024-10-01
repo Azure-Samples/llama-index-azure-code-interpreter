@@ -9,7 +9,8 @@ param environmentName string
 @description('Primary location for all resources')
 param location string
 
-param llamaIndexAzureDynamicSessionExists bool
+param llamaIndexAzureDynamicSessionExists bool = false
+
 @secure()
 param llamaIndexAzureDynamicSessionDefinition object
 
@@ -108,13 +109,13 @@ module appsEnv './shared/apps-env.bicep' = {
   scope: rg
 }
 
-module llamaIndexAzureDynamicSession './app/llama-index-azure-dynamic-session.bicep' = {
-  name: 'llama-index-azure-dynamic-session'
+module llamaIndexAzureDynamicSession './app/llamaindex-azure-dynamic-session.bicep' = {
+  name: 'aca-app'
   params: {
-    name: '${abbrs.appContainerApps}llama-index-${resourceToken}'
+    name: '${abbrs.appContainerApps}llamaindex-${resourceToken}'
     location: location
     tags: tags
-    identityName: '${abbrs.managedIdentityUserAssignedIdentities}llama-index-${resourceToken}'
+    identityName: '${abbrs.managedIdentityUserAssignedIdentities}llamaindex-${resourceToken}'
     applicationInsightsName: monitoring.outputs.applicationInsightsName
     containerAppsEnvironmentName: appsEnv.outputs.name
     containerRegistryName: registry.outputs.name
@@ -196,6 +197,8 @@ module acaSessionExecutorRoleBackend 'shared/security-role.bicep' = {
   scope: rg
 }
 
+output AZURE_CONTAINER_REGISTRY_ENDPOINT string = llamaIndexAzureDynamicSession.outputs.registryLoginServer
+output AZURE_CONTAINER_REGISTRY_NAME string = llamaIndexAzureDynamicSession.outputs.registryName
 output AZURE_POOL_MANAGEMENT_ENDPOINT string = llamaIndexAzureDynamicSession.outputs.uri
 output AZURE_OPENAI_ENDPOINT string = azureOpenAi.outputs.endpoint
 output OPENAI_API_VERSION string = azureOpenAiApiVersion

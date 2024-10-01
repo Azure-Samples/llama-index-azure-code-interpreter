@@ -2,7 +2,7 @@
 
 name: llama-index-azure-code-interpreter
 metadata:
-    template: azd-init@1.10.1
+    template: llama-index-azure-code-interpreter@0.1.0
 requiredVersions:
     azd: ">= 1.10.0"
 hooks:
