@@ -118,8 +118,8 @@ You need to install following tools to work on your local machine:
   * Windows: `winget install microsoft.azd`
   * Linux: `curl -fsSL https://aka.ms/install-azd.sh | bash`
   * MacOS: `brew tap azure/azd && brew install azd`
-* Docker Desktop 
-* Node.js (v20 or later)
+* Docker Desktop (for Mac M1 M2 M3, use [Docker Desktop for Apple Silicon](https://docs.docker.com/docker-for-mac/apple-silicon/) 4.34.2 or later)
+* Node.js (v20 LTS)
 * Git
 
 Then you can get the project code:
