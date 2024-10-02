@@ -9,8 +9,6 @@ param environmentName string
 @description('Primary location for all resources')
 param location string
 
-param llamaIndexAzureDynamicSessionExists bool = false
-
 @secure()
 param llamaIndexAzureDynamicSessionDefinition object
 
@@ -119,7 +117,7 @@ module llamaIndexAzureDynamicSession './app/llamaindex-azure-dynamic-session.bic
     applicationInsightsName: monitoring.outputs.applicationInsightsName
     containerAppsEnvironmentName: appsEnv.outputs.name
     containerRegistryName: registry.outputs.name
-    exists: llamaIndexAzureDynamicSessionExists
+    dynamicSessionsName: '${abbrs.managedIdentityUserAssignedIdentities}llamaindex-session-pool-${resourceToken}'
     appDefinition: llamaIndexAzureDynamicSessionDefinition
     azureOpenAiDeploymentName: azureOpenAiDeploymentName
     azureOpenAiApiVersion: azureOpenAiApiVersion

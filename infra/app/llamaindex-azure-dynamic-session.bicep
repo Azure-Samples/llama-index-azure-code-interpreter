@@ -6,11 +6,10 @@ param identityName string
 param containerRegistryName string
 param containerAppsEnvironmentName string
 param applicationInsightsName string
-param exists bool
 param azureOpenAiDeploymentName string
 param azureOpenAiEndpoint string
 param azureOpenAiApiVersion string
-param dynamicSessionsName string = 'llamaindex-sessions'
+param dynamicSessionsName string
 
 @description('The name of the container image')
 param imageName string = ''
@@ -126,6 +125,14 @@ resource app 'Microsoft.App/containerApps@2023-05-02-preview' = {
             {
               name: 'AZURE_DEPLOYMENT_NAME'
               value: azureOpenAiDeploymentName
+            }
+            {
+              name: 'AZURE_CLIENT_ID'
+              value: identity.properties.clientId
+            }
+            {
+              name: 'AZURE_TENANT_ID'
+              value: identity.properties.tenantId
             }
           ],
           env,

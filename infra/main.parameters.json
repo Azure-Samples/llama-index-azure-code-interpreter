@@ -8,9 +8,6 @@
       "location": {
         "value": "${AZURE_LOCATION=eastus}"
       },
-      "llamaIndexAzureDynamicSessionExists": {
-        "value": "${SERVICE_LLAMA_INDEX_AZURE_DYNAMIC_SESSION_RESOURCE_EXISTS=false}"
-      },
       "llamaIndexAzureDynamicSessionDefinition": {
         "value": {
           "settings": [
