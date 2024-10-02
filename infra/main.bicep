@@ -18,6 +18,17 @@ param principalId string
 @description('Whether the deployment is running on GitHub Actions')
 param CI string = ''
 
+@description('Public network access value for all deployed resources')
+@allowed(['Enabled', 'Disabled'])
+param publicNetworkAccess string = 'Enabled'
+
+@allowed(['None', 'AzureServices'])
+@description('If allowedIp is set, whether azure services are allowed to bypass the storage and AI services firewall.')
+param bypass string = 'AzureServices'
+
+param storageContainerName string = 'files'
+param storageSkuName string // Set in main.parameters.json
+
 param disableKeyBasedAuth bool = true
 param azureOpenAiDeploymentName string // See main.parameters.json
 param azureOpenAiApiVersion string // See main.parameters.json 
@@ -35,21 +46,40 @@ var tags = {
 }
 
 var SYSTEM_PROMPT = '''
-You're a helpful assistant! Your task is respond to the user's questions. 
-When the user asks questions about code, always use code interpreter tool to execute the generated code. 
-If the user requests an image or a chart, or a graph, or a visual, always use PNG format. 
-Limit the dimension of the image to 512x512 pixels. 
-If the code execution fails, try 3 times and exit. 
-If you need to save the image to disk, always save it in '/public/tools/azure-dynamic-sessions/'.
+I want you to process the user's input using the code interpreter tool. 
+After processing, ensure that the output image is always returned in base64 format and encoded as a PNG file. 
+Include the base64 image using the following format: data:image/png;base64,<string>. 
+Additionally, upload the PNG file and render the image in the response using 
+the following Markdown format: ![Rendered Image](https://<storage name>.blob.core.windows.net/files/<filename>.png). Ensure the base64-encoded image is included as data:image/png;base64,<string>
 '''
 
 var abbrs = loadJsonContent('./abbreviations.json')
 var resourceToken = toLower(uniqueString(subscription().id, environmentName, location))
+var principalType = empty(CI) ? 'User' : 'ServicePrincipal'
 
 resource rg 'Microsoft.Resources/resourceGroups@2022-09-01' = {
   name: 'rg-${environmentName}'
   location: location
   tags: tags
+}
+
+module llamaIndexAzureDynamicSession './app/llamaindex-azure-dynamic-session.bicep' = {
+  name: 'aca-app'
+  params: {
+    name: '${abbrs.appContainerApps}llamaindex-${resourceToken}'
+    location: location
+    tags: tags
+    identityName: '${abbrs.managedIdentityUserAssignedIdentities}llamaindex-${resourceToken}'
+    applicationInsightsName: monitoring.outputs.applicationInsightsName
+    containerAppsEnvironmentName: appsEnv.outputs.name
+    containerRegistryName: registry.outputs.name
+    dynamicSessionsName: '${abbrs.managedIdentityUserAssignedIdentities}llamaindex-session-pool-${resourceToken}'
+    appDefinition: llamaIndexAzureDynamicSessionDefinition
+    azureOpenAiDeploymentName: azureOpenAiDeploymentName
+    azureOpenAiApiVersion: azureOpenAiApiVersion
+    azureOpenAiEndpoint: azureOpenAi.outputs.endpoint
+  }
+  scope: rg
 }
 
 module monitoring './shared/monitoring.bicep' = {
@@ -107,21 +137,29 @@ module appsEnv './shared/apps-env.bicep' = {
   scope: rg
 }
 
-module llamaIndexAzureDynamicSession './app/llamaindex-azure-dynamic-session.bicep' = {
-  name: 'aca-app'
+module storage './shared/storage-account.bicep' = {
+  name: 'storage'
   params: {
-    name: '${abbrs.appContainerApps}llamaindex-${resourceToken}'
+    name: '${abbrs.storageStorageAccounts}${resourceToken}'
     location: location
     tags: tags
-    identityName: '${abbrs.managedIdentityUserAssignedIdentities}llamaindex-${resourceToken}'
-    applicationInsightsName: monitoring.outputs.applicationInsightsName
-    containerAppsEnvironmentName: appsEnv.outputs.name
-    containerRegistryName: registry.outputs.name
-    dynamicSessionsName: '${abbrs.managedIdentityUserAssignedIdentities}llamaindex-session-pool-${resourceToken}'
-    appDefinition: llamaIndexAzureDynamicSessionDefinition
-    azureOpenAiDeploymentName: azureOpenAiDeploymentName
-    azureOpenAiApiVersion: azureOpenAiApiVersion
-    azureOpenAiEndpoint: azureOpenAi.outputs.endpoint
+    publicNetworkAccess: publicNetworkAccess
+    bypass: bypass
+    allowBlobPublicAccess: true
+    allowSharedKeyAccess: false
+    sku: {
+      name: storageSkuName
+    }
+    deleteRetentionPolicy: {
+      enabled: true
+      days: 2
+    }
+    containers: [
+      {
+        name: storageContainerName
+        publicAccess: 'Blob'
+      }
+    ]
   }
   scope: rg
 }
@@ -152,8 +190,6 @@ module azureOpenAi 'shared/cognitive-services.bicep' = {
   }
   scope: rg
 }
-
-var principalType = empty(CI) ? 'User' : 'ServicePrincipal'
 
 module openAiRoleUser 'shared/security-role.bicep' = {
   name: 'openai-role-user'
@@ -195,13 +231,45 @@ module acaSessionExecutorRoleBackend 'shared/security-role.bicep' = {
   scope: rg
 }
 
+module storageRoleUser 'shared/security-role.bicep' = {
+  name: 'storage-role-user'
+  params: {
+    principalId: principalId
+    roleDefinitionId: '2a2b9908-6ea1-4ae2-8e65-a410df84e7d1'
+    principalType: principalType
+  }
+  scope: rg
+}
+
+module storageContribRoleUser 'shared/security-role.bicep' = {
+  name: 'storage-contrib-role-user'
+  params: {
+    principalId: principalId
+    roleDefinitionId: 'ba92f5b4-2d11-453d-a403-e96b0029c9fe'
+    principalType: principalType
+  }
+  scope: rg
+}
+
+module storageRoleBackend 'shared/security-role.bicep' = {
+  name: 'storage-role-backend'
+  params: {
+    principalId: llamaIndexAzureDynamicSession.outputs.principalId
+    roleDefinitionId: '2a2b9908-6ea1-4ae2-8e65-a410df84e7d1'
+    principalType: 'ServicePrincipal'
+  }
+  scope: rg
+}
+
+output AZURE_STORAGE_ACCOUNT string = storage.outputs.name
+output AZURE_STORAGE_CONTAINER string = storageContainerName
+output AZURE_STORAGE_RESOURCE_GROUP string = rg.name
 output AZURE_CONTAINER_REGISTRY_ENDPOINT string = llamaIndexAzureDynamicSession.outputs.registryLoginServer
 output AZURE_CONTAINER_REGISTRY_NAME string = llamaIndexAzureDynamicSession.outputs.registryName
-output AZURE_POOL_MANAGEMENT_ENDPOINT string = llamaIndexAzureDynamicSession.outputs.uri
+output AZURE_POOL_MANAGEMENT_ENDPOINT string = llamaIndexAzureDynamicSession.outputs.poolManagementEndpoint
 output AZURE_OPENAI_ENDPOINT string = azureOpenAi.outputs.endpoint
 output OPENAI_API_VERSION string = azureOpenAiApiVersion
 output AZURE_DEPLOYMENT_NAME string = azureOpenAiDeploymentName
 output EMBEDDING_MODEL string = azureOpenAiEmbeddingModel
 output EMBEDDING_DIM string = azureOpenAiEmbeddingDim
-output AZURE_CONTAINER_APP_SESSION_POOL_MANAGEMENT_ENDPOINT string = llamaIndexAzureDynamicSession.outputs.poolManagementEndpoint
 output SYSTEM_PROMPT string = SYSTEM_PROMPT

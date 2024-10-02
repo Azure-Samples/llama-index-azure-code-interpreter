@@ -50,6 +50,9 @@
       },
       "CI": {
         "value": "${GITHUB_ACTIONS}"
+      },
+      "storageSkuName": {
+        "value": "${AZURE_STORAGE_SKU=Standard_LRS}"
       }
     }
 }

@@ -15,6 +15,7 @@ import {
   randomUUID,
 } from "@llamaindex/env";
 import { BaseTool, ToolMetadata } from "llamaindex";
+import { uploadFileToAzureStorage } from "../file-storage";
 
 let _currentSessionId = "";
 let _userAgent = "";
@@ -373,7 +374,7 @@ export class AzureDynamicSessionTool
       },
     };
 
-    console.log("payload", { apiUrl, payload });
+    console.log("payload", { apiUrl, headers, payload });
 
     try {
       const response = await fetch(apiUrl, {
@@ -381,6 +382,8 @@ export class AzureDynamicSessionTool
         headers,
         body: JSON.stringify(payload),
       });
+
+      console.log("response", response);
 
       return this.parseResponse(response);
     } catch (error) {
@@ -423,7 +426,7 @@ export class AzureDynamicSessionTool
     if (typeof result !== "string") {
       if (result && result.type === "image") {
         const base64Data = result.base64_data;
-        const { outputPath } = await this.saveToDisk(
+        const { outputPath } = await this.saveToDiskOrAzureStorage(
           base64Data,
           result.format,
         );
@@ -439,7 +442,7 @@ export class AzureDynamicSessionTool
    * @param ext The file extension.
    * @returns The path and filename to the saved file.
    */
-  private async saveToDisk(
+  private async saveToDiskOrAzureStorage(
     base64Data: string,
     ext: string,
   ): Promise<{
@@ -448,6 +451,22 @@ export class AzureDynamicSessionTool
     try {
       const filename = `${randomUUID()}.${ext}`;
       const buffer = Buffer.from(base64Data, "base64");
+
+      if (getEnv("AZURE_STORAGE_ACCOUNT")) {
+        const outputPath = await uploadFileToAzureStorage(filename, buffer);
+        
+        console.log({base64Data, outputPath});
+
+        console.log(
+          `[AzureDynamicSessionTool.saveToDisk] Saved file to Azure Storage: ${outputPath}`,
+        );
+
+        return {
+          outputPath,
+        };
+      }
+
+
       const outputPath = await this.getOutputPath(filename);
       await fs.writeFile(outputPath, buffer);
       console.log(
