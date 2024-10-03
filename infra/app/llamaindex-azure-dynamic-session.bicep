@@ -10,6 +10,8 @@ param azureOpenAiDeploymentName string
 param azureOpenAiEndpoint string
 param azureOpenAiApiVersion string
 param dynamicSessionsName string
+param storageAccountName string
+param storageContainerName string
 
 @description('The name of the container image')
 param imageName string = ''
@@ -133,6 +135,14 @@ resource app 'Microsoft.App/containerApps@2023-05-02-preview' = {
             {
               name: 'AZURE_TENANT_ID'
               value: identity.properties.tenantId
+            }
+            {
+              name: 'AZURE_STORAGE_ACCOUNT'
+              value: storageAccountName
+            }
+            {
+              name: 'AZURE_STORAGE_CONTAINER'
+              value: storageContainerName
             }
           ],
           env,

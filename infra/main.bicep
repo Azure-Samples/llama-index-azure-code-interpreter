@@ -78,6 +78,8 @@ module llamaIndexAzureDynamicSession './app/llamaindex-azure-dynamic-session.bic
     azureOpenAiDeploymentName: azureOpenAiDeploymentName
     azureOpenAiApiVersion: azureOpenAiApiVersion
     azureOpenAiEndpoint: azureOpenAi.outputs.endpoint
+    storageAccountName: storage.outputs.name
+    storageContainerName: storageContainerName
   }
   scope: rg
 }
