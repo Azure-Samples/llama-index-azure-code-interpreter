@@ -1,3 +1,22 @@
+<!--
+---
+page_type: sample
+languages:
+- javascript
+- typescript
+- nodejs
+- bicep
+- azdeveloper
+products:
+- azure-openai
+- azure-container-apps
+- azure
+urlFragment: llama-index-azure-code-interpreter
+name: Serverless RAG application with LlamaIndex and Azure Dyamic Sessions Tool
+description: This sample shows how to use LlamaIndex and Azure Container Apps as a serverless deployment platform and Azure Dymanic Session as a tool for code interpretation.
+---
+-->
+
 # Serverless RAG application with LlamaIndex and Azure Dyamic Sessions Tool
 
 [![Open project in GitHub Codespaces](https://img.shields.io/badge/Codespaces-Open-black?style=flat-square&logo=github)](https://codespaces.new/Azure-Samples/llama-index-azure-code-interpreter?hide_repo_select=true&ref=main&quickstart=true)
