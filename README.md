@@ -17,6 +17,8 @@ description: This sample shows how to use LlamaIndex and Azure Container Apps as
 ---
 -->
 
+<div align="center">
+  
 # Serverless RAG application with LlamaIndex and Azure Dyamic Sessions Tool
 
 [![Open project in GitHub Codespaces](https://img.shields.io/badge/Codespaces-Open-black?style=flat-square&logo=github)](https://codespaces.new/Azure-Samples/llama-index-azure-code-interpreter?hide_repo_select=true&ref=main&quickstart=true)
@@ -34,9 +36,9 @@ This is a [LlamaIndex](https://www.llamaindex.ai/) project using [Next.js](https
 [![Getting Started](https://img.shields.io/badge/🚀%20Getting%20Started-blue?style=flat-square)](#getting-started)
 [![Contributing](https://img.shields.io/badge/🤝%20Contributing-blue?style=flat-square)](#contributing)
 [![Give us a star](https://img.shields.io/badge/⭐%20Give%20us%20a%20star-blue?style=flat-square)](https://github.com/Azure-Samples/llama-index-javascript/stargazers)
+</div>
 
-
-  <img src="./docs/assets/llamaindex-code-interpreter-azure-dynamic-session-small.png" alt="Screenshot showing the LlamaIndex app in action" width="640px" />
+![Screenshot showing the LlamaIndex app in action](./docs/assets/llamaindex-code-interpreter-azure-dynamic-session-small.png)
 
 ## Important Security Notice
 
@@ -53,11 +55,7 @@ This template, the application code and configuration it contains, has been buil
 
 ### Architecture Diagram
 
-<img src="./docs/assets/llamaindex-code-interpreter-azure-dynamic-session-architecture.png" alt="Architecture Diagram" width="640px" />
-
-### Demo Video (optional)
-
-(Embed demo video here)
+![Screenshot showing the chatgpt app high level diagram](./docs/assets/llamaindex-code-interpreter-azure-dynamic-session-architecture.png)
 
 ### Azure account requirements
 
