@@ -28,7 +28,7 @@
     "got": "^14.4.1",
     "llamaindex": "0.8.31",
     "lucide-react": "^0.294.0",
-    "next": "^14.2.26",
+    "next": "^14.2.30",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-markdown": "^8.0.7",
