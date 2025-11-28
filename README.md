@@ -19,7 +19,7 @@ description: This sample shows how to use LlamaIndex and Azure Container Apps as
 
 <div align="center">
   
-# Serverless RAG application with LlamaIndex and Azure Dyamic Sessions Tool
+# Serverless RAG application with LlamaIndex and Azure Dynamic Sessions Tool
 
 [![Open project in GitHub Codespaces](https://img.shields.io/badge/Codespaces-Open-black?style=flat-square&logo=github)](https://codespaces.new/Azure-Samples/llama-index-azure-code-interpreter?hide_repo_select=true&ref=main&quickstart=true)
 [![Open project in Dev Containers](https://img.shields.io/badge/Dev_Containers-Open-blue?style=flat-square)](https://codespaces.new/Azure-Samples/llama-index-azure-code-interpreter?hide_repo_select=true&ref=main&quickstart=true)
