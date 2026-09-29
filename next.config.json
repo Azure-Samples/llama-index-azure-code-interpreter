@@ -1,17 +1,18 @@
 {
+  "outputFileTracingIncludes": {
+    "/*": [
+      "./cache/**/*"
+    ]
+  },
+  "outputFileTracingExcludes": {
+    "/api/files/*": [
+      ".next/**/*",
+      "node_modules/**/*",
+      "public/**/*",
+      "app/**/*"
+    ]
+  },
   "experimental": {
-    "outputFileTracingIncludes": {
-      "/*": [
-        "./cache/**/*"
-      ]
-    },
-    "outputFileTracingExcludes": {
-      "/api/files/*": [
-        ".next/**/*",
-        "node_modules/**/*",
-        "public/**/*",
-        "app/**/*"
-      ]
-    }
+    "middlewareClientMaxBodySize": "50mb"
   }
 }
